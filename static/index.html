@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#E8651A">
+<link rel="manifest" href="/static/manifest.json">
+<title>Spark Your Spotify</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --spark-orange: #E8651A;
+    --spark-yellow: #F5D623;
+    --spark-red: #E03C1F;
+    --spark-gradient: linear-gradient(135deg, #E8651A, #F5D623, #E8651A, #E03C1F);
+    --spark-gradient-h: linear-gradient(90deg, #E8651A, #F5D623, #E8651A, #E03C1F);
+    --bg: #FFFFFF;
+    --text: #1A1A1A;
+    --text-muted: #555555;
+    --text-dim: #999999;
+    --border: #E0E0E0;
+    --surface: #F7F7F7;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gradient-strip {
+    height: 4px;
+    background: var(--spark-gradient-h);
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  /* ── App Shell ── */
+  .app {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    padding: 20px 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .app-header img {
+    height: 40px;
+    width: auto;
+  }
+
+  /* ── Landing Screen ── */
+  .landing {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 80px;
+  }
+  .landing-title {
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .landing-title .highlight {
+    background: var(--spark-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .landing-subtitle {
+    font-size: 15px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  /* ── Input Area ── */
+  .input-group {
+    margin-bottom: 12px;
+  }
+  .input-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .input-field {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+    font-family: inherit;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-field:focus {
+    border-color: var(--spark-orange);
+  }
+  .input-field::placeholder {
+    color: var(--text-dim);
+  }
+
+  .zip-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+  .zip-row .input-group {
+    flex: 1;
+  }
+  .zip-row .input-group:first-child {
+    flex: 2;
+  }
+
+  .spark-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    color: white;
+    background: var(--spark-gradient);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 8px;
+  }
+  .spark-btn:hover {
+    opacity: 0.9;
+  }
+  .spark-btn:active {
+    transform: scale(0.98);
+  }
+  .spark-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .input-hint {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: center;
+    margin-top: 12px;
+  }
+  .input-hint a {
+    color: var(--spark-orange);
+    text-decoration: none;
+  }
+
+  /* ── Loading Screen ── */
+  .loading {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-bottom: 80px;
+  }
+  .loading.active {
+    display: flex;
+  }
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--border);
+    border-top-color: var(--spark-orange);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 24px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .loading-text {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .loading-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .loading-steps {
+    margin-top: 24px;
+    text-align: left;
+  }
+  .loading-step {
+    font-size: 13px;
+    color: var(--text-dim);
+    padding: 4px 0;
+    transition: color 0.3s;
+  }
+  .loading-step.active {
+    color: var(--spark-orange);
+    font-weight: 600;
+  }
+  .loading-step.done {
+    color: var(--text-muted);
+  }
+  .loading-step.done::before {
+    content: "\2713  ";
+  }
+
+  /* ── Error ── */
+  .error-msg {
+    display: none;
+    background: #FFF5F5;
+    border: 1px solid #E03C1F;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 12px;
+    font-size: 14px;
+    color: #C0392B;
+  }
+  .error-msg.active {
+    display: block;
+  }
+
+  /* ── Result Screen ── */
+  .result {
+    display: none;
+    flex-direction: column;
+    padding-bottom: 20px;
+  }
+  .result.active {
+    display: flex;
+  }
+  .result-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .result-btn {
+    flex: 1;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    text-align: center;
+    text-decoration: none;
+  }
+  .result-btn.primary {
+    background: var(--spark-gradient);
+    color: white;
+    border: none;
+  }
+  .result-btn.secondary {
+    background: var(--bg);
+    color: var(--text);
+    border: 2px solid var(--border);
+  }
+  .result-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .result-card iframe {
+    width: 100%;
+    border: none;
+    min-height: 600px;
+  }
+
+  /* ── Footer ── */
+  .app-footer {
+    padding: 16px 0;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+  .app-footer a {
+    color: var(--spark-orange);
+    text-decoration: none;
+  }
+
+  /* ── Hide/show states ── */
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="gradient-strip"></div>
+
+<div class="app">
+
+  <!-- Header -->
+  <header class="app-header">
+    <img src="https://static.wixstatic.com/media/7e4837_c710cafef2f9452ba5491d89f80bd269~mv2.png" alt="SparkFM" />
+  </header>
+
+  <!-- Landing -->
+  <main class="landing" id="landing">
+    <h1 class="landing-title">
+      <span class="highlight">Spark</span> Your Spotify
+    </h1>
+    <p class="landing-subtitle">
+      Drop a playlist link. We'll find local artists<br>
+      that match your taste and put you on.
+    </p>
+
+    <div class="zip-row">
+      <div class="input-group">
+        <label class="input-label" for="playlist-input">Spotify Playlist Link</label>
+        <input
+          type="url"
+          id="playlist-input"
+          class="input-field"
+          placeholder="https://open.spotify.com/playlist/..."
+          autocomplete="off"
+          autocapitalize="off"
+        />
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="zip-input">ZIP</label>
+        <input
+          type="text"
+          id="zip-input"
+          class="input-field"
+          placeholder="02118"
+          maxlength="5"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          style="width: 90px;"
+        />
+      </div>
+    </div>
+
+    <button class="spark-btn" id="spark-btn" onclick="handleSpark()">
+      Spark It
+    </button>
+
+    <div class="error-msg" id="error-msg"></div>
+
+    <p class="input-hint">
+      Make sure your playlist is set to <strong>public</strong>.<br>
+      <a href="https://sparkfmonline.com" target="_blank">What is SparkFM?</a>
+    </p>
+  </main>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Building your Spark</div>
+    <div class="loading-sub">This takes about 30 seconds</div>
+    <div class="loading-steps" id="loading-steps">
+      <div class="loading-step" data-step="playlist">Reading your playlist...</div>
+      <div class="loading-step" data-step="artists">Finding local artists...</div>
+      <div class="loading-step" data-step="curating">Curating your mix...</div>
+      <div class="loading-step" data-step="rendering">Rendering your Spark Card...</div>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="result" id="result">
+    <div class="result-actions">
+      <button class="result-btn secondary" onclick="startOver()">New Spark</button>
+    </div>
+    <div class="result-card">
+      <iframe id="result-frame" title="Your Spark Card"></iframe>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    Inspired by <a href="https://sparkfmonline.com" target="_blank">SparkFM Online Radio</a> &bull; Boston, MA
+  </footer>
+
+</div>
+
+<div class="gradient-strip"></div>
+
+<script>
+const API_BASE = window.location.origin;
+
+function showScreen(screen) {
+  document.getElementById('landing').classList.toggle('hidden', screen !== 'landing');
+  document.getElementById('loading').classList.toggle('hidden', screen !== 'loading');
+  document.getElementById('loading').classList.toggle('active', screen === 'loading');
+  document.getElementById('result').classList.toggle('hidden', screen !== 'result');
+  document.getElementById('result').classList.toggle('active', screen === 'result');
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.classList.add('active');
+}
+
+function clearError() {
+  document.getElementById('error-msg').classList.remove('active');
+}
+
+function animateSteps() {
+  const steps = document.querySelectorAll('.loading-step');
+  const delays = [0, 5000, 15000, 25000];
+  steps.forEach((step, i) => {
+    setTimeout(() => {
+      steps.forEach((s, j) => {
+        if (j < i) { s.classList.add('done'); s.classList.remove('active'); }
+        else if (j === i) { s.classList.add('active'); s.classList.remove('done'); }
+        else { s.classList.remove('active', 'done'); }
+      });
+    }, delays[i]);
+  });
+}
+
+async function handleSpark() {
+  const playlistInput = document.getElementById('playlist-input');
+  const zipInput = document.getElementById('zip-input');
+  const btn = document.getElementById('spark-btn');
+
+  const url = playlistInput.value.trim();
+  const zip = zipInput.value.trim();
+
+  clearError();
+
+  if (!url) {
+    showError('Paste a Spotify playlist link to get started.');
+    return;
+  }
+
+  if (!url.includes('spotify.com/playlist/') && !url.includes('spotify:playlist:')) {
+    showError('That doesn\'t look like a Spotify playlist link. It should look like: https://open.spotify.com/playlist/...');
+    return;
+  }
+
+  btn.disabled = true;
+  showScreen('loading');
+  animateSteps();
+
+  try {
+    const body = { playlist_url: url };
+    if (zip) body.zip_code = zip;
+
+    const resp = await fetch(`${API_BASE}/api/spark`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.detail || `Server error (${resp.status})`);
+    }
+
+    const data = await resp.json();
+
+    // Render the HTML card in the iframe
+    const frame = document.getElementById('result-frame');
+    frame.srcdoc = data.html;
+
+    // Auto-resize iframe after load
+    frame.onload = () => {
+      try {
+        const h = frame.contentDocument.documentElement.scrollHeight;
+        frame.style.height = h + 'px';
+      } catch (e) {
+        frame.style.height = '1200px';
+      }
+    };
+
+    showScreen('result');
+
+  } catch (err) {
+    showScreen('landing');
+    showError(err.message || 'Something went wrong. Try again.');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function startOver() {
+  showScreen('landing');
+  document.getElementById('playlist-input').value = '';
+  document.getElementById('zip-input').value = '';
+  clearError();
+}
+
+// Allow Enter key to submit
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && document.activeElement.closest('.landing')) {
+    handleSpark();
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "user_handle": "goyle",
+  "user_location": {
+    "city": "Boston",
+    "state": "MA",
+    "zip": "02118",
+    "lat": 42.34,
+    "lng": -71.07
+  },
+  "top_artists_long_term": [
+    {"name": "SZA", "genres": ["r&b", "pop"], "spotify_id": "7tYKF4w9nC0nq9CsPZTHyP", "popularity": 91},
+    {"name": "Jazmine Sullivan", "genres": ["r&b", "neo soul"], "spotify_id": "1WvnC4MdeUJHGFtRcjEO9Q", "popularity": 72},
+    {"name": "Summer Walker", "genres": ["r&b", "pop"], "spotify_id": "57LYzLEk2LcFghVwuWbcuS", "popularity": 82},
+    {"name": "Kehlani", "genres": ["r&b", "pop"], "spotify_id": "3LsT0FttUPIlFnJJsarp6S", "popularity": 76},
+    {"name": "Daniel Caesar", "genres": ["r&b", "neo soul"], "spotify_id": "20wkVLutqVOYrc0sxVs0lI", "popularity": 78},
+    {"name": "Frank Ocean", "genres": ["r&b", "alternative r&b"], "spotify_id": "2h93pZq0e7k5yf4dywlkpM", "popularity": 85},
+    {"name": "Snoh Aalegra", "genres": ["r&b", "swedish r&b"], "spotify_id": "0LOK81e9H5lr0NVtbGCKaT", "popularity": 68},
+    {"name": "Jhene Aiko", "genres": ["r&b", "pop"], "spotify_id": "5ZS223C6JyBfXasXxrRqOk", "popularity": 79},
+    {"name": "H.E.R.", "genres": ["r&b", "pop"], "spotify_id": "3Y7RZ2MfGMmhYdaFSQBhMm", "popularity": 74},
+    {"name": "Brent Faiyaz", "genres": ["r&b", "alternative r&b"], "spotify_id": "3tlXDsROYz8BIFrjboHnmR", "popularity": 80},
+    {"name": "Lucky Daye", "genres": ["r&b", "neo soul"], "spotify_id": "04MRzwDFcGmIvNNsRNalOq", "popularity": 65},
+    {"name": "Ravyn Lenae", "genres": ["r&b", "alternative r&b"], "spotify_id": "2kQnsbKnIiMahOFAFKONSo", "popularity": 58},
+    {"name": "Ari Lennox", "genres": ["r&b", "neo soul"], "spotify_id": "3T2dUvCNp4JT8CLFXV2Ybo", "popularity": 70},
+    {"name": "Erykah Badu", "genres": ["neo soul", "r&b"], "spotify_id": "7fIvjotigTGQqMYoioCLqK", "popularity": 72},
+    {"name": "Solange", "genres": ["r&b", "art pop"], "spotify_id": "2auiVi8sUZo17dLy1HwjTk", "popularity": 65}
+  ],
+  "top_artists_medium_term": [
+    {"name": "SZA", "genres": ["r&b", "pop"], "spotify_id": "7tYKF4w9nC0nq9CsPZTHyP", "popularity": 91},
+    {"name": "Summer Walker", "genres": ["r&b", "pop"], "spotify_id": "57LYzLEk2LcFghVwuWbcuS", "popularity": 82},
+    {"name": "Brent Faiyaz", "genres": ["r&b", "alternative r&b"], "spotify_id": "3tlXDsROYz8BIFrjboHnmR", "popularity": 80},
+    {"name": "Jazmine Sullivan", "genres": ["r&b", "neo soul"], "spotify_id": "1WvnC4MdeUJHGFtRcjEO9Q", "popularity": 72},
+    {"name": "Lucky Daye", "genres": ["r&b", "neo soul"], "spotify_id": "04MRzwDFcGmIvNNsRNalOq", "popularity": 65}
+  ],
+  "top_artists_short_term": [
+    {"name": "SZA", "genres": ["r&b", "pop"], "spotify_id": "7tYKF4w9nC0nq9CsPZTHyP", "popularity": 91},
+    {"name": "Jazmine Sullivan", "genres": ["r&b", "neo soul"], "spotify_id": "1WvnC4MdeUJHGFtRcjEO9Q", "popularity": 72},
+    {"name": "Ravyn Lenae", "genres": ["r&b", "alternative r&b"], "spotify_id": "2kQnsbKnIiMahOFAFKONSo", "popularity": 58}
+  ],
+  "top_tracks_medium_term": [
+    {"track": "Kill Bill", "artist": "SZA", "spotify_url": "https://open.spotify.com/track/1Qrg8KqiBpW07V7PNxwwwL", "spotify_id": "1Qrg8KqiBpW07V7PNxwwwL"},
+    {"track": "Snooze", "artist": "SZA", "spotify_url": "https://open.spotify.com/track/4iZ4pt7kvcaH6Yo8UoZ4s2", "spotify_id": "4iZ4pt7kvcaH6Yo8UoZ4s2"},
+    {"track": "Pick Up Your Feelings", "artist": "Jazmine Sullivan", "spotify_url": "https://open.spotify.com/track/5GpBeSFabsEvCWkGoh3bYH", "spotify_id": "5GpBeSFabsEvCWkGoh3bYH"},
+    {"track": "No Love", "artist": "Summer Walker", "spotify_url": "https://open.spotify.com/track/2fQrGHiQOvpSfQGhQuHrj4", "spotify_id": "2fQrGHiQOvpSfQGhQuHrj4"},
+    {"track": "Altar", "artist": "Kehlani", "spotify_url": "https://open.spotify.com/track/7Bm4DdqzV8Ifm5wRKecQHP", "spotify_id": "7Bm4DdqzV8Ifm5wRKecQHP"}
+  ],
+  "recent_plays": [
+    {"track": "Kill Bill", "artist": "SZA"},
+    {"track": "Heaux Tales", "artist": "Jazmine Sullivan"},
+    {"track": "Session 32", "artist": "Summer Walker"}
+  ],
+  "playlist_names": ["neo soul vibes", "late night r&b", "getting ready", "boston summer"],
+  "genre_distribution": {"r&b": 0.38, "neo soul": 0.18, "pop": 0.15, "alternative r&b": 0.12, "art pop": 0.05}
+}

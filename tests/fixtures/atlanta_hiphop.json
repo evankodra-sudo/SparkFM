@@ -1,0 +1,51 @@
+{
+  "user_handle": "marcusatl",
+  "user_location": {
+    "city": "Atlanta",
+    "state": "GA",
+    "zip": "30312",
+    "lat": 33.74,
+    "lng": -84.39
+  },
+  "top_artists_long_term": [
+    {"name": "Kendrick Lamar", "genres": ["hip hop", "west coast rap"], "spotify_id": "2YZyLoL8N0Wb9xBt1NhZWg", "popularity": 92},
+    {"name": "J. Cole", "genres": ["hip hop", "conscious hip hop"], "spotify_id": "6l3HvQ5sa6mXTsMTB19rO5", "popularity": 88},
+    {"name": "JID", "genres": ["hip hop", "rap"], "spotify_id": "6U3ybJ9UHNKEdsH7ktGBZ7", "popularity": 78},
+    {"name": "Future", "genres": ["trap", "hip hop", "atl hip hop"], "spotify_id": "1RyvyyTE3xzB2ZywiAwp0i", "popularity": 88},
+    {"name": "21 Savage", "genres": ["hip hop", "atl hip hop", "trap"], "spotify_id": "1URnnhqYAYcrqrcwql10ft", "popularity": 86},
+    {"name": "Denzel Curry", "genres": ["hip hop", "florida rap"], "spotify_id": "6fxyWrfmjcbj5d12gXeiNV", "popularity": 72},
+    {"name": "Earthgang", "genres": ["hip hop", "atl hip hop"], "spotify_id": "5JKFS0bKbMmmRIuiMVxHvn", "popularity": 60},
+    {"name": "Smino", "genres": ["hip hop", "alternative hip hop"], "spotify_id": "5rrmeweNjaAGPbNbU4RP9M", "popularity": 65},
+    {"name": "Bas", "genres": ["hip hop", "conscious hip hop"], "spotify_id": "4AqWSqd8K1pPPkBbSBUkqk", "popularity": 58},
+    {"name": "Isaiah Rashad", "genres": ["hip hop", "southern hip hop"], "spotify_id": "6aaMZ3fcfLv4tEbmY7bjRM", "popularity": 68},
+    {"name": "Joey Bada$$", "genres": ["hip hop", "east coast hip hop"], "spotify_id": "2P5sC9cVZDToPxyomzF1UH", "popularity": 70},
+    {"name": "Vince Staples", "genres": ["hip hop", "west coast rap"], "spotify_id": "68kEuyFKyqrdQQLLsmiatm", "popularity": 68},
+    {"name": "Metro Boomin", "genres": ["trap", "hip hop"], "spotify_id": "0iEtIxbK0KXaIBVv1XIWI0", "popularity": 85},
+    {"name": "Travis Scott", "genres": ["hip hop", "trap", "rap"], "spotify_id": "0Y5tJX1MQlPlqiwlOH1tJY", "popularity": 90},
+    {"name": "Gunna", "genres": ["trap", "atl hip hop"], "spotify_id": "2hlmm7s2ICUX0LVIhVFlZQ", "popularity": 82}
+  ],
+  "top_artists_medium_term": [
+    {"name": "JID", "genres": ["hip hop", "rap"], "spotify_id": "6U3ybJ9UHNKEdsH7ktGBZ7", "popularity": 78},
+    {"name": "Kendrick Lamar", "genres": ["hip hop", "west coast rap"], "spotify_id": "2YZyLoL8N0Wb9xBt1NhZWg", "popularity": 92},
+    {"name": "Denzel Curry", "genres": ["hip hop", "florida rap"], "spotify_id": "6fxyWrfmjcbj5d12gXeiNV", "popularity": 72},
+    {"name": "Earthgang", "genres": ["hip hop", "atl hip hop"], "spotify_id": "5JKFS0bKbMmmRIuiMVxHvn", "popularity": 60}
+  ],
+  "top_artists_short_term": [
+    {"name": "JID", "genres": ["hip hop", "rap"], "spotify_id": "6U3ybJ9UHNKEdsH7ktGBZ7", "popularity": 78},
+    {"name": "Smino", "genres": ["hip hop", "alternative hip hop"], "spotify_id": "5rrmeweNjaAGPbNbU4RP9M", "popularity": 65}
+  ],
+  "top_tracks_medium_term": [
+    {"track": "Surround Sound", "artist": "JID", "spotify_url": "https://open.spotify.com/track/5LFo3EvFtEBKRIXaGE1JDB", "spotify_id": "5LFo3EvFtEBKRIXaGE1JDB"},
+    {"track": "HUMBLE.", "artist": "Kendrick Lamar", "spotify_url": "https://open.spotify.com/track/7KXjTSCq5nL1LoYtL7XAwS", "spotify_id": "7KXjTSCq5nL1LoYtL7XAwS"},
+    {"track": "Mask Off", "artist": "Future", "spotify_url": "https://open.spotify.com/track/0VgkVdmE1VSwjLAj0qSzgY", "spotify_id": "0VgkVdmE1VSwjLAj0qSzgY"},
+    {"track": "a]lot", "artist": "21 Savage", "spotify_url": "https://open.spotify.com/track/2t8yVaLvJ0RenpXUIAC52d", "spotify_id": "2t8yVaLvJ0RenpXUIAC52d"},
+    {"track": "Clout Cobain", "artist": "Denzel Curry", "spotify_url": "https://open.spotify.com/track/6fEjGxhsjmL0yrFjBPTJ3u", "spotify_id": "6fEjGxhsjmL0yrFjBPTJ3u"}
+  ],
+  "recent_plays": [
+    {"track": "Surround Sound", "artist": "JID"},
+    {"track": "Sacrifices", "artist": "Earthgang"},
+    {"track": "Anita", "artist": "Smino"}
+  ],
+  "playlist_names": ["atl heat", "lyrical rap", "gym mode", "late night bars"],
+  "genre_distribution": {"hip hop": 0.35, "trap": 0.18, "atl hip hop": 0.12, "rap": 0.10, "conscious hip hop": 0.08, "west coast rap": 0.07, "alternative hip hop": 0.05}
+}

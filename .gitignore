@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+spark.log
+spark-card-*.html
+.spark/
+.DS_Store

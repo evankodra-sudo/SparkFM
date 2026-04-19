@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spark Your Spotify — {{ user_handle }}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --spark-orange: #E8651A;
+    --spark-yellow: #F5D623;
+    --spark-red: #E03C1F;
+    --spark-gradient: linear-gradient(135deg, #E8651A, #F5D623, #E8651A, #E03C1F);
+    --spark-gradient-h: linear-gradient(90deg, #E8651A, #F5D623, #E8651A, #E03C1F);
+    --bg: #FFFFFF;
+    --surface: #F7F7F7;
+    --surface-2: #EEEEEE;
+    --text: #1A1A1A;
+    --text-muted: #555555;
+    --text-dim: #999999;
+    --border: #E0E0E0;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* Gradient banner strip */
+  .gradient-strip {
+    height: 4px;
+    background: var(--spark-gradient-h);
+    width: 100%;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-logo img {
+    height: 36px;
+    width: auto;
+  }
+  .header-right {
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .header-title {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 36px 0 20px;
+  }
+  .hero-greeting {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .hero-headline {
+    font-size: 18px;
+    font-weight: 600;
+    background: var(--spark-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Taste Profile */
+  .taste-profile {
+    padding: 16px 0 28px;
+  }
+  .taste-quote {
+    border-left: 3px solid;
+    border-image: var(--spark-gradient) 1;
+    padding: 16px 20px;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  /* Section titles */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  /* Spotlight Artists */
+  .spotlight {
+    padding: 0 0 28px;
+  }
+  .artist-card {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+  }
+  .artist-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+  .artist-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .artist-location {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .tier-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: var(--spark-gradient);
+    color: white;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .artist-oneliner {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+  .artist-bridge {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+  .listen-btn {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    background: var(--spark-gradient);
+    padding: 8px 20px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .listen-btn:hover {
+    opacity: 0.85;
+  }
+
+  /* Playlist */
+  .playlist-section {
+    padding: 0 0 28px;
+  }
+  .playlist-list {
+    list-style: none;
+  }
+  .playlist-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--surface-2);
+    gap: 12px;
+  }
+  .playlist-row:last-child {
+    border-bottom: none;
+  }
+  .playlist-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dim);
+    width: 24px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .playlist-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .playlist-track {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .playlist-track a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .playlist-track a:hover {
+    color: var(--spark-orange);
+  }
+  .playlist-artist {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .playlist-tag {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+  .tag-discovery {
+    background: var(--spark-gradient);
+    color: white;
+  }
+  .tag-bridge {
+    background: var(--surface-2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .playlist-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    font-style: italic;
+  }
+
+  /* Footer */
+  .footer {
+    padding: 28px 0 16px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .footer-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .footer-btn {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 100px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition: all 0.2s;
+  }
+  .footer-btn:hover {
+    border-color: var(--spark-orange);
+    color: var(--spark-orange);
+  }
+  .footer-btn.primary {
+    background: var(--spark-gradient);
+    border: none;
+    color: white;
+  }
+  .footer-credit {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-width: 360px;
+    margin: 0 auto 24px;
+  }
+  .quis-line {
+    font-size: 11px;
+    font-style: italic;
+    color: var(--text-dim);
+    padding: 16px 0 24px;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+<div class="gradient-strip"></div>
+<div class="container">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-logo">
+      <img src="https://static.wixstatic.com/media/7e4837_c710cafef2f9452ba5491d89f80bd269~mv2.png" alt="SparkFM" />
+    </div>
+    <div class="header-right">
+      <div class="header-title">Spark Your Spotify</div>
+      <div>{{ date }}</div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1 class="hero-greeting">Hey {{ user_handle }}, here's your Spark</h1>
+    <p class="hero-headline">{{ taste_profile.headline }}</p>
+  </section>
+
+  <!-- Taste Profile -->
+  <section class="taste-profile">
+    <div class="taste-quote">{{ taste_profile.body }}</div>
+  </section>
+
+  <!-- Spotlight Artists -->
+  <section class="spotlight">
+    <div class="section-title">Artists to know</div>
+    {% for artist in spotlight_artists %}
+    <div class="artist-card">
+      <div class="artist-card-header">
+        <div>
+          <div class="artist-name">{{ artist.name }}</div>
+          {% if artist.origin_city or artist.origin_state %}
+          <div class="artist-location">Based in {{ artist.origin_city }}{% if artist.origin_city and artist.origin_state %}, {% endif %}{{ artist.origin_state }}</div>
+          {% endif %}
+        </div>
+        <span class="tier-pill">Local to {{ radius_label }}</span>
+      </div>
+      <div class="artist-oneliner">{{ artist.one_liner }}</div>
+      <div class="artist-bridge">{{ artist.why_this_matches_you }}</div>
+      <a href="{{ artist.spotify_url }}" class="listen-btn" target="_blank" rel="noopener">Listen on Spotify</a>
+    </div>
+    {% endfor %}
+  </section>
+
+  <!-- Playlist -->
+  <section class="playlist-section">
+    <div class="section-title">Your Spark Playlist</div>
+    <ol class="playlist-list">
+      {% for track in playlist %}
+      <li class="playlist-row">
+        <span class="playlist-num">{{ loop.index }}</span>
+        <div class="playlist-info">
+          <div class="playlist-track"><a href="{{ track.spotify_url }}" target="_blank" rel="noopener">{{ track.track }}</a></div>
+          <div class="playlist-artist">{{ track.artist }}</div>
+          {% if track.note %}<div class="playlist-note">{{ track.note }}</div>{% endif %}
+        </div>
+        <span class="playlist-tag {{ 'tag-discovery' if track.role == 'discovery' else 'tag-bridge' }}">{{ track.role }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-buttons">
+      <a href="https://sparkfmonline.com/live" class="footer-btn primary" target="_blank" rel="noopener">Listen to SparkFM Live</a>
+      <a href="https://instagram.com/sparkfmonline" class="footer-btn" target="_blank" rel="noopener">Follow SparkFM</a>
+      <a href="https://givebutter.com/Sparktheculture" class="footer-btn" target="_blank" rel="noopener">Donate to SparkFM</a>
+    </div>
+    <p class="footer-credit">Inspired by SparkFM Online Radio &bull; Boston, MA. Stations like Spark are how local scenes stay alive &mdash; find yours.</p>
+    <p class="quis-line">Quis claims he's not a bitch.</p>
+  </footer>
+
+</div>
+<div class="gradient-strip"></div>
+</body>
+</html>

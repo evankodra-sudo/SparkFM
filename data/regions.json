@@ -1,0 +1,19 @@
+{
+  "new_england": ["MA", "CT", "RI", "NH", "VT", "ME"],
+  "tri_state": ["NY", "NJ", "CT"],
+  "dmv": ["DC", "MD", "VA"],
+  "mid_atlantic": ["PA", "DE", "NJ", "NY"],
+  "southeast": ["NC", "SC", "FL", "TN", "KY"],
+  "deep_south": ["GA", "AL", "MS", "LA"],
+  "texas": ["TX"],
+  "midwest": ["OH", "MI", "IN", "IL", "WI", "MN", "IA", "MO"],
+  "plains": ["ND", "SD", "NE", "KS", "OK"],
+  "mountain_west": ["MT", "WY", "CO", "ID", "UT"],
+  "southwest": ["AZ", "NM", "NV"],
+  "pacific_nw": ["WA", "OR"],
+  "bay_area": ["CA-bay"],
+  "socal": ["CA-south"],
+  "california": ["CA"],
+  "hawaii": ["HI"],
+  "alaska": ["AK"]
+}

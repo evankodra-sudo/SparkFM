@@ -1,0 +1,51 @@
+{
+  "user_handle": "sarahvt",
+  "user_location": {
+    "city": "Burlington",
+    "state": "VT",
+    "zip": "05401",
+    "lat": 44.48,
+    "lng": -73.21
+  },
+  "top_artists_long_term": [
+    {"name": "Phoebe Bridgers", "genres": ["indie rock", "indie pop", "singer-songwriter"], "spotify_id": "1r1uxoy19fzMxunt3ONAkG", "popularity": 76},
+    {"name": "Big Thief", "genres": ["indie rock", "indie folk", "art rock"], "spotify_id": "0lFmqmk69gNlHYxhGAUo5I", "popularity": 65},
+    {"name": "Sufjan Stevens", "genres": ["indie folk", "singer-songwriter", "chamber pop"], "spotify_id": "4MXUO7sVCaFgFjoTI5ox5c", "popularity": 70},
+    {"name": "Adrianne Lenker", "genres": ["indie folk", "singer-songwriter"], "spotify_id": "4HN7MoP3v7MdtCaSKfabNp", "popularity": 55},
+    {"name": "Bon Iver", "genres": ["indie folk", "indie rock"], "spotify_id": "4LEiUm1SRbFMgfqnQTwUbQ", "popularity": 76},
+    {"name": "Fleet Foxes", "genres": ["indie folk", "baroque pop"], "spotify_id": "4EVpmkEwrLYEg6jIsiPMIb", "popularity": 68},
+    {"name": "Elliott Smith", "genres": ["indie rock", "singer-songwriter", "lo-fi"], "spotify_id": "2ApaG60P4r0jMjpVN5nMgj", "popularity": 62},
+    {"name": "Iron & Wine", "genres": ["indie folk", "singer-songwriter"], "spotify_id": "4M5nCE08jVIftEFmgLCOpP", "popularity": 60},
+    {"name": "The National", "genres": ["indie rock", "art rock"], "spotify_id": "2cCUtGK9sDU2EoElnk0GNB", "popularity": 72},
+    {"name": "Lucy Dacus", "genres": ["indie rock", "indie pop"], "spotify_id": "7iYFsMIRWNJKpHMMXvlkig", "popularity": 62},
+    {"name": "Waxahatchee", "genres": ["indie rock", "indie folk"], "spotify_id": "0fAJFirjdClQKOPcqNMlHN", "popularity": 55},
+    {"name": "Julien Baker", "genres": ["indie rock", "singer-songwriter"], "spotify_id": "12zbUHbPHL5DGuJtiPMiPR", "popularity": 58},
+    {"name": "Angel Olsen", "genres": ["indie rock", "indie folk", "singer-songwriter"], "spotify_id": "7pFeBzX627ff0VnN6bxaYJ", "popularity": 60},
+    {"name": "Japanese Breakfast", "genres": ["indie pop", "indie rock"], "spotify_id": "3sNVsP50132btJsGkmYNVB", "popularity": 65},
+    {"name": "Mitski", "genres": ["indie rock", "art pop"], "spotify_id": "2uYWxilOVlUdk4oV3DvwqK", "popularity": 75}
+  ],
+  "top_artists_medium_term": [
+    {"name": "Big Thief", "genres": ["indie rock", "indie folk", "art rock"], "spotify_id": "0lFmqmk69gNlHYxhGAUo5I", "popularity": 65},
+    {"name": "Phoebe Bridgers", "genres": ["indie rock", "indie pop", "singer-songwriter"], "spotify_id": "1r1uxoy19fzMxunt3ONAkG", "popularity": 76},
+    {"name": "Adrianne Lenker", "genres": ["indie folk", "singer-songwriter"], "spotify_id": "4HN7MoP3v7MdtCaSKfabNp", "popularity": 55},
+    {"name": "Waxahatchee", "genres": ["indie rock", "indie folk"], "spotify_id": "0fAJFirjdClQKOPcqNMlHN", "popularity": 55}
+  ],
+  "top_artists_short_term": [
+    {"name": "Adrianne Lenker", "genres": ["indie folk", "singer-songwriter"], "spotify_id": "4HN7MoP3v7MdtCaSKfabNp", "popularity": 55},
+    {"name": "Big Thief", "genres": ["indie rock", "indie folk", "art rock"], "spotify_id": "0lFmqmk69gNlHYxhGAUo5I", "popularity": 65}
+  ],
+  "top_tracks_medium_term": [
+    {"track": "Not", "artist": "Big Thief", "spotify_url": "https://open.spotify.com/track/0F0Cve5SNRGLgSO0l4q3Nm", "spotify_id": "0F0Cve5SNRGLgSO0l4q3Nm"},
+    {"track": "Kyoto", "artist": "Phoebe Bridgers", "spotify_url": "https://open.spotify.com/track/6TGd66r0nlPaYm1KPXhCMM", "spotify_id": "6TGd66r0nlPaYm1KPXhCMM"},
+    {"track": "Mystery of Love", "artist": "Sufjan Stevens", "spotify_url": "https://open.spotify.com/track/4DWBg1qt0F0xEwPEiPRXms", "spotify_id": "4DWBg1qt0F0xEwPEiPRXms"},
+    {"track": "anything", "artist": "Adrianne Lenker", "spotify_url": "https://open.spotify.com/track/2elBH2FEn0ZqlN19tTzjYE", "spotify_id": "2elBH2FEn0ZqlN19tTzjYE"},
+    {"track": "Skinny Love", "artist": "Bon Iver", "spotify_url": "https://open.spotify.com/track/5WtMkmXRrJbMOEJYX7cRqt", "spotify_id": "5WtMkmXRrJbMOEJYX7cRqt"}
+  ],
+  "recent_plays": [
+    {"track": "Not", "artist": "Big Thief"},
+    {"track": "anything", "artist": "Adrianne Lenker"},
+    {"track": "Fourth of July", "artist": "Sufjan Stevens"}
+  ],
+  "playlist_names": ["quiet mornings", "folk walks", "vermont winter", "sad girl autumn"],
+  "genre_distribution": {"indie rock": 0.28, "indie folk": 0.25, "singer-songwriter": 0.18, "indie pop": 0.10, "art rock": 0.07, "lo-fi": 0.04, "chamber pop": 0.03}
+}
