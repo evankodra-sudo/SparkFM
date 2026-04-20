@@ -179,11 +179,14 @@ def _read_tidal_playlist(url: str, location: dict):
     except ValueError as e:
         raise HTTPException(400, str(e))
 
+    from src.tidal_client import TidalAuthRequired
     try:
         session = get_tidal_session()
+    except TidalAuthRequired:
+        raise HTTPException(403, "tidal_auth_required")
     except Exception as e:
         logger.error("Tidal auth failed: %s", e)
-        raise HTTPException(500, "Tidal authentication not configured on this server.")
+        raise HTTPException(500, "Tidal authentication failed.")
 
     try:
         taste = fetch_taste_from_tidal_playlist(session, playlist_id, location)
@@ -201,6 +204,23 @@ def _read_tidal_playlist(url: str, location: dict):
         pass
 
     return taste, sp
+
+
+@app.post("/api/tidal/auth")
+async def tidal_auth_start():
+    """Start the Tidal OAuth device flow. Returns a URL for the user to visit."""
+    from src.tidal_client import start_tidal_auth, has_tidal_session
+    if has_tidal_session():
+        return {"status": "already_connected"}
+    result = start_tidal_auth()
+    return {"status": "pending", **result}
+
+
+@app.get("/api/tidal/auth/status")
+async def tidal_auth_status():
+    """Poll whether the Tidal login has completed."""
+    from src.tidal_client import check_tidal_auth_status
+    return {"status": check_tidal_auth_status()}
 
 
 @app.get("/health")

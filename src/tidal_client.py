@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+import threading
 from collections import Counter
 from pathlib import Path
 
@@ -15,43 +16,104 @@ logger = logging.getLogger("spark")
 SPARK_DIR = Path.home() / ".spark"
 TIDAL_SESSION_PATH = SPARK_DIR / "tidal_session.json"
 
+# In-memory state for pending OAuth flows
+_pending_auth = {
+    "session": None,
+    "login": None,
+    "future": None,
+    "status": "idle",  # idle | pending | done | error
+}
+
+
+def has_tidal_session() -> bool:
+    """Check if we have a valid saved Tidal session."""
+    if not TIDAL_SESSION_PATH.exists():
+        return False
+    try:
+        session = tidalapi.Session()
+        saved = json.loads(TIDAL_SESSION_PATH.read_text())
+        session.load_oauth_session(
+            token_type=saved["token_type"],
+            access_token=saved["access_token"],
+            refresh_token=saved.get("refresh_token", ""),
+            expiry_time=saved.get("expiry_time"),
+        )
+        return session.check_login()
+    except Exception:
+        return False
+
 
 def get_tidal_session() -> tidalapi.Session:
-    """Get an authenticated Tidal session, loading saved credentials or prompting login."""
+    """Get an authenticated Tidal session from saved credentials."""
     session = tidalapi.Session()
 
-    # Try to load saved session
-    if TIDAL_SESSION_PATH.exists():
-        try:
-            saved = json.loads(TIDAL_SESSION_PATH.read_text())
-            session.load_oauth_session(
-                token_type=saved["token_type"],
-                access_token=saved["access_token"],
-                refresh_token=saved.get("refresh_token", ""),
-                expiry_time=saved.get("expiry_time"),
-            )
-            if session.check_login():
-                logger.info("Tidal session loaded from cache")
-                return session
-        except Exception as e:
-            logger.warning("Failed to load saved Tidal session: %s", e)
+    if not TIDAL_SESSION_PATH.exists():
+        raise TidalAuthRequired()
 
-    # Need fresh login — device code flow
+    try:
+        saved = json.loads(TIDAL_SESSION_PATH.read_text())
+        session.load_oauth_session(
+            token_type=saved["token_type"],
+            access_token=saved["access_token"],
+            refresh_token=saved.get("refresh_token", ""),
+            expiry_time=saved.get("expiry_time"),
+        )
+        if session.check_login():
+            logger.info("Tidal session loaded from cache")
+            return session
+    except Exception as e:
+        logger.warning("Failed to load saved Tidal session: %s", e)
+
+    raise TidalAuthRequired()
+
+
+class TidalAuthRequired(Exception):
+    """Raised when Tidal login is needed."""
+    pass
+
+
+def start_tidal_auth() -> dict:
+    """Start the Tidal OAuth device flow. Returns the login URL for the user."""
+    session = tidalapi.Session()
     login, future = session.login_oauth()
-    print(f"\n{'='*50}")
-    print(f"TIDAL LOGIN REQUIRED (one-time setup)")
-    print(f"Go to: https://{login.verification_uri_complete}")
-    print(f"Or visit {login.verification_uri} and enter code: {login.user_code}")
-    print(f"{'='*50}\n")
 
-    future.result()  # Blocks until user completes login
+    _pending_auth["session"] = session
+    _pending_auth["login"] = login
+    _pending_auth["future"] = future
+    _pending_auth["status"] = "pending"
 
-    if session.check_login():
-        _save_tidal_session(session)
-        logger.info("Tidal session authenticated and saved")
-        return session
+    # Monitor the future in a background thread
+    def _watch():
+        try:
+            future.result(timeout=300)  # 5 min timeout
+            if session.check_login():
+                _save_tidal_session(session)
+                _pending_auth["status"] = "done"
+                logger.info("Tidal auth completed via browser")
+            else:
+                _pending_auth["status"] = "error"
+        except Exception as e:
+            logger.warning("Tidal auth failed: %s", e)
+            _pending_auth["status"] = "error"
 
-    raise RuntimeError("Tidal login failed")
+    thread = threading.Thread(target=_watch, daemon=True)
+    thread.start()
+
+    # Build the login URL
+    verification_uri = login.verification_uri_complete
+    if not verification_uri.startswith("http"):
+        verification_uri = f"https://{verification_uri}"
+
+    return {
+        "login_url": verification_uri,
+        "user_code": login.user_code,
+        "verification_uri": login.verification_uri,
+    }
+
+
+def check_tidal_auth_status() -> str:
+    """Check if the pending Tidal auth has completed. Returns: pending | done | error | idle."""
+    return _pending_auth["status"]
 
 
 def _save_tidal_session(session: tidalapi.Session):
@@ -68,17 +130,12 @@ def _save_tidal_session(session: tidalapi.Session):
 
 def parse_tidal_playlist_url(url: str) -> str:
     """Extract playlist UUID from a Tidal playlist URL or URI."""
-    # Handle URLs like https://tidal.com/browse/playlist/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    # or https://listen.tidal.com/playlist/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
     match = re.search(r"playlist/([a-f0-9\-]{36})", url)
     if match:
         return match.group(1)
-
-    # Also handle short UUIDs or direct IDs
     match = re.search(r"playlist/([a-zA-Z0-9\-]+)", url)
     if match:
         return match.group(1)
-
     raise ValueError(f"Could not parse Tidal playlist ID from: {url}")
 
 
@@ -94,11 +151,9 @@ def fetch_taste_from_tidal_playlist(session: tidalapi.Session, playlist_id: str,
     user_handle = playlist.creator.name if playlist.creator else "listener"
     logger.info("Reading Tidal playlist '%s' by %s", playlist_name, user_handle)
 
-    # Fetch all tracks
     tracks = playlist.tracks()
     logger.info("Playlist has %d tracks", len(tracks))
 
-    # Extract unique artists and count appearances
     artist_map = {}
     artist_track_count = Counter()
 
@@ -109,31 +164,17 @@ def fetch_taste_from_tidal_playlist(session: tidalapi.Session, playlist_id: str,
                 artist_map[aid] = {
                     "name": artist.name,
                     "genres": [],
-                    "spotify_id": "",  # Not applicable
+                    "spotify_id": "",
                     "tidal_id": aid,
                     "popularity": 50,
                 }
             artist_track_count[aid] += 1
 
-    # Tidal doesn't expose genres on artists easily, but we can try
-    for aid, info in artist_map.items():
-        try:
-            full_artist = session.artist(int(aid))
-            # tidalapi may not expose genres directly, but let's try
-            if hasattr(full_artist, 'roles') and full_artist.roles:
-                pass  # Roles aren't genres
-        except Exception:
-            pass
-
-    # Rank artists by track count
     top_artist_ids = [aid for aid, _ in artist_track_count.most_common(30)]
     top_artists_list = [artist_map[aid] for aid in top_artist_ids if aid in artist_map]
 
-    # Build genre distribution from artist names + search hints
-    # Since Tidal doesn't give us genres easily, we'll let Claude infer from artist names
     genre_distribution = {}
 
-    # Build track list with Tidal URLs
     top_tracks_list = []
     for track in tracks[:50]:
         artist_name = track.artists[0].name if track.artists else "Unknown"
@@ -141,7 +182,7 @@ def fetch_taste_from_tidal_playlist(session: tidalapi.Session, playlist_id: str,
         top_tracks_list.append({
             "track": track.name,
             "artist": artist_name,
-            "spotify_url": tidal_url,  # Reuse field name for template compatibility
+            "spotify_url": tidal_url,
             "spotify_id": str(track.id),
         })
 
@@ -158,7 +199,6 @@ def fetch_taste_from_tidal_playlist(session: tidalapi.Session, playlist_id: str,
         "_source": "tidal",
     }
 
-    # Enforce 8KB cap
     serialized = json.dumps(snapshot)
     if len(serialized) > 8192:
         for key in ("top_tracks_medium_term",):

@@ -309,6 +309,81 @@
     text-decoration: none;
   }
 
+  /* ── Tidal Auth Screen ── */
+  .tidal-auth {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-bottom: 80px;
+  }
+  .tidal-auth.active {
+    display: flex;
+  }
+  .tidal-auth-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+  .tidal-auth-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tidal-auth-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+    max-width: 320px;
+  }
+  .tidal-login-btn {
+    display: inline-block;
+    padding: 14px 32px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    color: white;
+    background: #000000;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    margin-bottom: 16px;
+  }
+  .tidal-login-btn:hover {
+    opacity: 0.85;
+  }
+  .tidal-waiting {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+  .tidal-waiting.active {
+    display: flex;
+  }
+  .tidal-waiting .spinner {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+    margin: 0;
+  }
+  .tidal-cancel {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 16px;
+    text-decoration: underline;
+  }
+
   /* ── Hide/show states ── */
   .hidden { display: none !important; }
 </style>
@@ -386,6 +461,23 @@
     </div>
   </div>
 
+  <!-- Tidal Auth -->
+  <div class="tidal-auth" id="tidal-auth">
+    <div class="tidal-auth-icon">🎵</div>
+    <div class="tidal-auth-title">Connect to Tidal</div>
+    <div class="tidal-auth-sub">
+      To read your Tidal playlist, you'll need to log in. This only takes a sec.
+    </div>
+    <a id="tidal-login-link" class="tidal-login-btn" href="#" target="_blank" rel="noopener">
+      Log in to Tidal
+    </a>
+    <div class="tidal-waiting" id="tidal-waiting">
+      <div class="spinner"></div>
+      <span>Waiting for you to log in...</span>
+    </div>
+    <button class="tidal-cancel" onclick="cancelTidalAuth()">Cancel</button>
+  </div>
+
   <!-- Result -->
   <div class="result" id="result">
     <div class="result-actions">
@@ -408,12 +500,14 @@
 <script>
 const API_BASE = window.location.origin;
 
+const screens = ['landing', 'loading', 'tidal-auth', 'result'];
 function showScreen(screen) {
-  document.getElementById('landing').classList.toggle('hidden', screen !== 'landing');
-  document.getElementById('loading').classList.toggle('hidden', screen !== 'loading');
-  document.getElementById('loading').classList.toggle('active', screen === 'loading');
-  document.getElementById('result').classList.toggle('hidden', screen !== 'result');
-  document.getElementById('result').classList.toggle('active', screen === 'result');
+  screens.forEach(s => {
+    const el = document.getElementById(s);
+    if (!el) return;
+    el.classList.toggle('hidden', s !== screen);
+    el.classList.toggle('active', s === screen);
+  });
 }
 
 function showError(msg) {
@@ -451,7 +545,7 @@ async function handleSpark() {
   clearError();
 
   if (!url) {
-    showError('Paste a Spotify playlist link to get started.');
+    showError('Paste a playlist link to get started.');
     return;
   }
 
@@ -467,44 +561,112 @@ async function handleSpark() {
   animateSteps();
 
   try {
-    const body = { playlist_url: url };
-    if (zip) body.zip_code = zip;
-
-    const resp = await fetch(`${API_BASE}/api/spark`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.detail || `Server error (${resp.status})`);
-    }
-
-    const data = await resp.json();
-
-    // Render the HTML card in the iframe
-    const frame = document.getElementById('result-frame');
-    frame.srcdoc = data.html;
-
-    // Auto-resize iframe after load
-    frame.onload = () => {
-      try {
-        const h = frame.contentDocument.documentElement.scrollHeight;
-        frame.style.height = h + 'px';
-      } catch (e) {
-        frame.style.height = '1200px';
-      }
-    };
-
-    showScreen('result');
-
+    const data = await callSparkAPI(url, zip);
+    showResult(data);
   } catch (err) {
-    showScreen('landing');
-    showError(err.message || 'Something went wrong. Try again.');
+    if (err.message === 'tidal_auth_required') {
+      // Need Tidal login — start the auth flow
+      await startTidalAuth(url, zip);
+    } else {
+      showScreen('landing');
+      showError(err.message || 'Something went wrong. Try again.');
+    }
   } finally {
     btn.disabled = false;
   }
+}
+
+async function callSparkAPI(url, zip) {
+  const body = { playlist_url: url };
+  if (zip) body.zip_code = zip;
+
+  const resp = await fetch(`${API_BASE}/api/spark`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.detail || `Server error (${resp.status})`);
+  }
+
+  return await resp.json();
+}
+
+function showResult(data) {
+  const frame = document.getElementById('result-frame');
+  frame.srcdoc = data.html;
+  frame.onload = () => {
+    try {
+      const h = frame.contentDocument.documentElement.scrollHeight;
+      frame.style.height = h + 'px';
+    } catch (e) {
+      frame.style.height = '1200px';
+    }
+  };
+  showScreen('result');
+}
+
+// ── Tidal Auth Flow ──
+
+let tidalPollTimer = null;
+
+async function startTidalAuth(playlistUrl, zip) {
+  showScreen('tidal-auth');
+
+  try {
+    const resp = await fetch(`${API_BASE}/api/tidal/auth`, { method: 'POST' });
+    const data = await resp.json();
+
+    if (data.status === 'already_connected') {
+      // Session exists — retry the spark call
+      showScreen('loading');
+      animateSteps();
+      const result = await callSparkAPI(playlistUrl, zip);
+      showResult(result);
+      return;
+    }
+
+    // Show login button with the URL
+    const loginLink = document.getElementById('tidal-login-link');
+    loginLink.href = data.login_url;
+    loginLink.onclick = () => {
+      document.getElementById('tidal-waiting').classList.add('active');
+    };
+
+    // Poll for completion
+    tidalPollTimer = setInterval(async () => {
+      try {
+        const statusResp = await fetch(`${API_BASE}/api/tidal/auth/status`);
+        const statusData = await statusResp.json();
+
+        if (statusData.status === 'done') {
+          clearInterval(tidalPollTimer);
+          // Auth complete — now run the spark
+          showScreen('loading');
+          animateSteps();
+          const result = await callSparkAPI(playlistUrl, zip);
+          showResult(result);
+        } else if (statusData.status === 'error') {
+          clearInterval(tidalPollTimer);
+          showScreen('landing');
+          showError('Tidal login failed. Please try again.');
+        }
+      } catch (e) {
+        // Keep polling
+      }
+    }, 2000);
+
+  } catch (err) {
+    showScreen('landing');
+    showError('Could not start Tidal login. Try again.');
+  }
+}
+
+function cancelTidalAuth() {
+  if (tidalPollTimer) clearInterval(tidalPollTimer);
+  showScreen('landing');
 }
 
 function startOver() {
