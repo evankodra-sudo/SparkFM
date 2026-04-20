@@ -330,18 +330,18 @@
       <span class="highlight">Spark</span> Your Spotify
     </h1>
     <p class="landing-subtitle">
-      Drop a playlist link. We'll find local artists<br>
-      that match your taste and put you on.
+      Drop a Spotify or Tidal playlist link.<br>
+      We'll find local artists that match your taste.
     </p>
 
     <div class="zip-row">
       <div class="input-group">
-        <label class="input-label" for="playlist-input">Spotify Playlist Link</label>
+        <label class="input-label" for="playlist-input">Playlist Link</label>
         <input
           type="url"
           id="playlist-input"
           class="input-field"
-          placeholder="https://open.spotify.com/playlist/..."
+          placeholder="Spotify or Tidal playlist link..."
           autocomplete="off"
           autocapitalize="off"
         />
@@ -368,7 +368,7 @@
     <div class="error-msg" id="error-msg"></div>
 
     <p class="input-hint">
-      Make sure your playlist is set to <strong>public</strong>.<br>
+      Works with <strong>Spotify</strong> and <strong>Tidal</strong>. Make sure your playlist is public.<br>
       <a href="https://sparkfmonline.com" target="_blank">What is SparkFM?</a>
     </p>
   </main>
@@ -455,8 +455,10 @@ async function handleSpark() {
     return;
   }
 
-  if (!url.includes('spotify.com/playlist/') && !url.includes('spotify:playlist:')) {
-    showError('That doesn\'t look like a Spotify playlist link. It should look like: https://open.spotify.com/playlist/...');
+  const isSpotify = url.includes('spotify.com/playlist/') || url.includes('spotify:playlist:');
+  const isTidal = url.includes('tidal.com') && url.includes('playlist');
+  if (!isSpotify && !isTidal) {
+    showError('That doesn\'t look like a playlist link. Paste a Spotify or Tidal playlist URL.');
     return;
   }
 

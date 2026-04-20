@@ -71,12 +71,8 @@ async def index():
 
 @app.post("/api/spark", response_model=SparkResponse)
 async def spark(req: SparkRequest):
-    """Main endpoint: playlist URL in, Spark Card out."""
-    from src.spotify_client import (
-        get_spotify_client_credentials,
-        parse_playlist_url,
-        fetch_taste_from_playlist,
-    )
+    """Main endpoint: playlist URL in, Spark Card out. Supports Spotify and Tidal."""
+    from src.tidal_client import is_tidal_url
     from src.candidates.spotify_graph import build_candidate_set
     from src.candidates.musicbrainz import enrich_candidates_with_geo
     from src.candidates.pool import build_final_pool, tier_display_name
@@ -84,17 +80,6 @@ async def spark(req: SparkRequest):
     from src.renderer import render_spark_card_html
 
     start = time.time()
-
-    # Validate env vars
-    for var in ("ANTHROPIC_API_KEY", "SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET"):
-        if not os.environ.get(var):
-            raise HTTPException(500, f"Server missing {var}")
-
-    # Parse playlist URL
-    try:
-        playlist_id = parse_playlist_url(req.playlist_url)
-    except ValueError as e:
-        raise HTTPException(400, str(e))
 
     # Resolve location
     if req.zip_code:
@@ -104,18 +89,17 @@ async def spark(req: SparkRequest):
         from src.location import detect_location
         location = detect_location()
 
-    # Get Spotify client (client credentials — no user login)
-    sp = get_spotify_client_credentials()
+    # Detect platform and read playlist
+    if is_tidal_url(req.playlist_url):
+        taste, sp = _read_tidal_playlist(req.playlist_url, location)
+    else:
+        taste, sp = _read_spotify_playlist(req.playlist_url, location)
 
-    # Build taste snapshot from playlist
-    try:
-        taste = fetch_taste_from_playlist(sp, playlist_id, location)
-    except Exception as e:
-        logger.error("Failed to read playlist: %s", e)
-        raise HTTPException(400, f"Could not read that playlist. Make sure it's public. Error: {e}")
-
-    # Build candidate pool
-    raw_candidates = build_candidate_set(sp, taste)
+    # Build candidate pool (uses Spotify search for both — Spotify has better discovery)
+    if sp:
+        raw_candidates = build_candidate_set(sp, taste)
+    else:
+        raw_candidates = []
     logger.info("Raw candidates: %d", len(raw_candidates))
 
     # Geo-enrich if pool is large enough
@@ -140,7 +124,7 @@ async def spark(req: SparkRequest):
     )
 
     elapsed = time.time() - start
-    logger.info("Spark completed in %.1fs for playlist %s", elapsed, playlist_id)
+    logger.info("Spark completed in %.1fs", elapsed)
 
     return SparkResponse(
         html=html,
@@ -150,6 +134,73 @@ async def spark(req: SparkRequest):
         radius_label=radius_label,
         user_handle=taste["user_handle"],
     )
+
+
+def _read_spotify_playlist(url: str, location: dict):
+    """Read a Spotify playlist and return (taste, spotify_client)."""
+    import os
+    from src.spotify_client import (
+        get_spotify_client_credentials,
+        parse_playlist_url,
+        fetch_taste_from_playlist,
+    )
+
+    for var in ("SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET"):
+        if not os.environ.get(var):
+            raise HTTPException(500, f"Server missing {var}")
+
+    try:
+        playlist_id = parse_playlist_url(url)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+    sp = get_spotify_client_credentials()
+
+    try:
+        taste = fetch_taste_from_playlist(sp, playlist_id, location)
+    except Exception as e:
+        logger.error("Failed to read Spotify playlist: %s", e)
+        raise HTTPException(400, f"Could not read that playlist. Make sure it's public. Error: {e}")
+
+    return taste, sp
+
+
+def _read_tidal_playlist(url: str, location: dict):
+    """Read a Tidal playlist and return (taste, spotify_client_or_none)."""
+    import os
+    from src.tidal_client import (
+        get_tidal_session,
+        parse_tidal_playlist_url,
+        fetch_taste_from_tidal_playlist,
+    )
+
+    try:
+        playlist_id = parse_tidal_playlist_url(url)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+    try:
+        session = get_tidal_session()
+    except Exception as e:
+        logger.error("Tidal auth failed: %s", e)
+        raise HTTPException(500, "Tidal authentication not configured on this server.")
+
+    try:
+        taste = fetch_taste_from_tidal_playlist(session, playlist_id, location)
+    except Exception as e:
+        logger.error("Failed to read Tidal playlist: %s", e)
+        raise HTTPException(400, f"Could not read that playlist. Error: {e}")
+
+    # Also get a Spotify client for candidate search (if available)
+    sp = None
+    try:
+        from src.spotify_client import get_spotify_client_credentials
+        if os.environ.get("SPOTIFY_CLIENT_ID"):
+            sp = get_spotify_client_credentials()
+    except Exception:
+        pass
+
+    return taste, sp
 
 
 @app.get("/health")
