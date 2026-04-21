@@ -133,7 +133,14 @@ def score_candidates(
         popularity = c.get("popularity", 50)
         pop_inverse = 1.0 - (popularity / 100.0)
 
-        c["_score"] = 0.5 * taste_adj + 0.3 * genre_match + 0.2 * pop_inverse
+        score = 0.5 * taste_adj + 0.3 * genre_match + 0.2 * pop_inverse
+
+        # Community artists get a significant boost — real humans said they belong
+        if c.get("_from_community"):
+            upvotes = c.get("_community_upvotes", 1)
+            score += 0.5 + (min(upvotes, 10) * 0.05)  # 0.5 base boost + up to 0.5 from upvotes
+
+        c["_score"] = score
 
     candidates.sort(key=lambda c: c["_score"], reverse=True)
     return candidates

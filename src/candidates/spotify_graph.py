@@ -56,18 +56,67 @@ def build_candidate_set(
     else:
         broader = []
 
+    # Source C: Community-submitted artists
+    community = _get_community_candidates(taste_snapshot)
+
     # Merge and deduplicate
     seen_ids = set()
+    seen_names = set()
     candidates = []
+
+    # Community artists go first — highest signal
+    for artist in community:
+        name_lower = artist["name"].lower()
+        if name_lower not in seen_names:
+            seen_names.add(name_lower)
+            artist["_from_community"] = True
+            artist["_from_related"] = False
+            candidates.append(artist)
+
     for artist in related + local + genre_only + broader:
         aid = artist["spotify_id"]
-        if aid in seen_ids or aid in known_ids:
+        name_lower = artist["name"].lower()
+        if aid in seen_ids or aid in known_ids or name_lower in seen_names:
             continue
         seen_ids.add(aid)
+        seen_names.add(name_lower)
         artist["_from_related"] = aid in {a["spotify_id"] for a in related}
+        artist["_from_community"] = False
         candidates.append(artist)
 
-    logger.info("Candidate set: %d unique artists (after removing %d known)", len(candidates), len(known_ids))
+    logger.info("Candidate set: %d unique artists (%d community, after removing %d known)",
+                len(candidates), len(community), len(known_ids))
+    return candidates
+
+
+def _get_community_candidates(taste_snapshot: dict) -> list[dict]:
+    """Pull matching artists from the community database."""
+    from src.community import get_local_artists
+
+    loc = taste_snapshot.get("user_location", {})
+    city = loc.get("city", "")
+    state = loc.get("state", "")
+    genres = list(taste_snapshot.get("genre_distribution", {}).keys())
+
+    if not city and not state:
+        return []
+
+    artists = get_local_artists(city, state, genres, limit=20)
+
+    # Convert to candidate format
+    candidates = []
+    for a in artists:
+        candidates.append({
+            "name": a["name"],
+            "genres": [g.strip() for g in a.get("genres", "").split(",") if g.strip()],
+            "spotify_id": "",
+            "spotify_url": a.get("spotify_url", ""),
+            "popularity": 30,  # Assume underground
+            "origin_city": a.get("city", ""),
+            "origin_state": a.get("state", ""),
+            "_community_upvotes": a.get("upvotes", 1),
+        })
+
     return candidates
 
 

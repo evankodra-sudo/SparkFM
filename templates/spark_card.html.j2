@@ -300,6 +300,62 @@
     padding: 16px 0 24px;
     opacity: 0.6;
   }
+
+  /* Feedback */
+  .feedback {
+    padding: 24px 0 8px;
+    border-top: 1px solid var(--border);
+  }
+  .feedback-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .feedback-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .feedback-form {
+    display: flex;
+    gap: 8px;
+  }
+  .feedback-input {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+  .feedback-input:focus {
+    border-color: var(--spark-orange);
+  }
+  .feedback-submit {
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    color: white;
+    background: var(--spark-gradient);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .feedback-msg {
+    font-size: 13px;
+    margin-top: 8px;
+    display: none;
+  }
+  .feedback-msg.show {
+    display: block;
+  }
+  .feedback-msg.success { color: #27ae60; }
+  .feedback-msg.error { color: var(--spark-red); }
 </style>
 </head>
 <body>
@@ -366,6 +422,58 @@
       {% endfor %}
     </ol>
   </section>
+
+  <!-- Feedback -->
+  <section class="feedback">
+    <div class="feedback-title">Know a local artist we missed?</div>
+    <div class="feedback-sub">Help us discover your scene. They'll show up for the next person.</div>
+    <div class="feedback-form">
+      <input type="text" class="feedback-input" id="feedback-artist" placeholder="Artist name" />
+      <button class="feedback-submit" onclick="submitArtist()">Add</button>
+    </div>
+    <div class="feedback-msg" id="feedback-msg"></div>
+  </section>
+
+  <script>
+  async function submitArtist() {
+    const input = document.getElementById('feedback-artist');
+    const msg = document.getElementById('feedback-msg');
+    const name = input.value.trim();
+    if (!name) return;
+
+    msg.className = 'feedback-msg';
+    msg.textContent = '';
+
+    try {
+      const resp = await fetch('/api/community/submit', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          name: name,
+          city: '{{ user_location.city | default("") }}',
+          state: '{{ user_location.state | default("") }}',
+          submitted_by: '{{ user_handle }}',
+          taste_context: '{{ taste_profile.headline | default("") }}'
+        })
+      });
+
+      if (resp.ok) {
+        msg.textContent = 'Added! They\'ll show up for listeners like you.';
+        msg.className = 'feedback-msg show success';
+        input.value = '';
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      msg.textContent = 'Could not submit. Try again.';
+      msg.className = 'feedback-msg show error';
+    }
+  }
+
+  document.getElementById('feedback-artist').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') submitArtist();
+  });
+  </script>
 
   <!-- Footer -->
   <footer class="footer">

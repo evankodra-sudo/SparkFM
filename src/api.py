@@ -121,6 +121,7 @@ async def spark(req: SparkRequest):
         user_handle=taste["user_handle"],
         radius_label=radius_label,
         candidate_pool=pool,
+        user_location=location,
     )
 
     elapsed = time.time() - start
@@ -221,6 +222,45 @@ async def tidal_auth_status():
     """Poll whether the Tidal login has completed."""
     from src.tidal_client import check_tidal_auth_status
     return {"status": check_tidal_auth_status()}
+
+
+class ArtistSubmission(BaseModel):
+    name: str
+    city: str
+    state: str
+    genres: Optional[str] = ""
+    submitted_by: Optional[str] = ""
+    taste_context: Optional[str] = ""
+    spotify_url: Optional[str] = ""
+    soundcloud_url: Optional[str] = ""
+
+
+@app.post("/api/community/submit")
+async def community_submit(sub: ArtistSubmission):
+    """Submit a local artist the app missed."""
+    from src.community import submit_artist
+    if not sub.name.strip():
+        raise HTTPException(400, "Artist name is required")
+    if not sub.city.strip() and not sub.state.strip():
+        raise HTTPException(400, "City or state is required")
+    result = submit_artist(
+        name=sub.name,
+        city=sub.city,
+        state=sub.state,
+        genres=sub.genres,
+        submitted_by=sub.submitted_by,
+        taste_context=sub.taste_context,
+        spotify_url=sub.spotify_url,
+        soundcloud_url=sub.soundcloud_url,
+    )
+    return {"status": "ok", "artist": result}
+
+
+@app.get("/api/community/stats")
+async def community_stats():
+    """Get stats about the community artist database."""
+    from src.community import get_stats
+    return get_stats()
 
 
 @app.get("/health")

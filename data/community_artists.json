@@ -1,0 +1,28 @@
+{
+  "artists": [
+    {
+      "name": "Dutchess Rebelle",
+      "city": "Boston",
+      "state": "MA",
+      "genres": "hip hop, r&b",
+      "submitted_by": "evan",
+      "submitted_at": "2026-04-21T08:02:51.525903",
+      "taste_context": "r&b and hip hop listener",
+      "upvotes": 1,
+      "spotify_url": "",
+      "soundcloud_url": ""
+    }
+  ],
+  "_schema": {
+    "name": "Artist name",
+    "city": "City they're from",
+    "state": "State abbreviation",
+    "genres": "Comma-separated genres (optional)",
+    "submitted_by": "Who submitted this",
+    "submitted_at": "ISO timestamp",
+    "taste_context": "What genres/artists the submitter listens to",
+    "upvotes": "Number of times different users submitted this same artist",
+    "spotify_url": "Spotify link if known (optional)",
+    "soundcloud_url": "SoundCloud link if known (optional)"
+  }
+}

@@ -63,6 +63,7 @@ def render_spark_card_html(
     user_handle: str,
     radius_label: str,
     candidate_pool: list[dict],
+    user_location: dict = None,
 ) -> str:
     """Render the Spark Card HTML and return it as a string (for API use)."""
     env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=True)
@@ -89,6 +90,7 @@ def render_spark_card_html(
         "spotlight_artists": spotlight,
         "playlist": claude_output.get("playlist", []),
         "radius_label": radius_label,
+        "user_location": user_location or {},
     }
 
     return template.render(**context)
